@@ -6,6 +6,8 @@
 # 0000000
 # Par exemple.
 
+# Commande d'utilisation : python game-of-life.py -i fichier.txt -o sortie.txt -m nombre d'itérations
+
 import argparse
 
 class frame:
@@ -16,7 +18,7 @@ class frame:
 
 
     def next_cell(self,x,y):
-        dirs = [(-1,-1),(0,-1),(1,-1),(1,0),(1,-1),(0,1),(-1,1),(-1,0)]
+        dirs = [(-1,-1),(0,-1),(1,1),(1,0),(1,-1),(0,1),(-1,1),(-1,0)]
         count = 0
         for dx,dy in dirs:
             x1,y1 = x+dx,y+dy
@@ -24,7 +26,7 @@ class frame:
                 count += self.grid[y1][x1]
             else:
                 continue
-        if self.grid[x][y]==1:
+        if self.grid[y][x]==1:
             if count < 2 or count > 3:
                 return 0
             else :
@@ -39,7 +41,7 @@ class frame:
         new_grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
         for x in range(self.width):
             for y in range(self.height):
-                new_grid[x][y] = self.next_cell(x,y)
+                new_grid[y][x] = self.next_cell(x,y)
         self.grid = new_grid
 
 def from_file(filename):
@@ -55,12 +57,14 @@ def from_file(filename):
     return frame(len(grid[0]), len(grid), grid)
 
 
+
+
 def parse_args():
     parser = argparse.ArgumentParser('Mise en place du jeu de la vie pour une grille d\'entrée et un nombre d\'itération donnés.')
     parser.add_argument("--input","-i", type = str, required = True, help = "Fichier contenant la grille initiale du jeu : une ligne de la grille de 0 et 1 par ligne, sans espaces.")
-    parser.add_argument("--output", "o", type = str, required = True, help = "Fichier où est stockée la grille après la dernière itération.")
+    parser.add_argument("--output", "-o", type = str, required = True, help = "Fichier où est stockée la grille après la dernière itération.")
     parser.add_argument("--iterations","-m", type = int, required = True, help = "Nombre d'itération souhaitées, entier supérieur ou égal à 0.")
-    return parser.parse_arg()
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
@@ -69,4 +73,4 @@ if __name__ == "__main__":
         f.next_frame()
     with open(args.output, 'w') as res:
         for row in f.grid:
-            res.write(''.join(str(cell) for cell in row) + '\n')           
+            res.write(''.join(str(cell) for cell in row) + '\n')         
